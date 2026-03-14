@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>README.gen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #010409; color: #c9d1d9; font-family: 'Courier New', monospace; min-height: 100vh; padding: 24px 16px 60px; }
+  @keyframes pulse  { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  @keyframes spin   { to{transform:rotate(360deg)} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideIn{ from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+  #app { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .title  { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#fff; letter-spacing:-0.02em; }
+  .title span { color:#58a6ff; }
+  .subtitle { font-size:12px; color:#6e7681; margin-top:4px; }
+
+  .stepbar { display:flex; }
+  .stepbar-item { flex:1; padding:6px 2px; text-align:center; font-size:10px; border:1px solid #21262d; color:#6e7681; transition:all 0.2s; margin-left:-1px; }
+  .stepbar-item:first-child { border-radius:6px 0 0 6px; margin-left:0; }
+  .stepbar-item:last-child  { border-radius:0 6px 6px 0; }
+  .stepbar-item.active { background:#161b22; border-color:#58a6ff44; color:#58a6ff; }
+
+  .badge { display:inline-block; font-size:10px; font-weight:700; border-radius:4px; padding:2px 8px; letter-spacing:0.08em; border:1px solid; }
+
+  .card { background:#0d1117; border:1px solid #21262d; border-radius:8px; overflow:hidden; animation:fadeIn 0.3s ease; }
+  .card-header { display:flex; align-items:center; justify-content:space-between; background:#161b22; border-bottom:1px solid #21262d; padding:10px 14px; }
+  .card-header-left { display:flex; align-items:center; gap:8px; }
+  .card-header-title { font-size:13px; color:#c9d1d9; font-weight:600; }
+  .card-header-sub   { font-size:11px; color:#6e7681; }
+  .card-body { padding:16px; display:flex; flex-direction:column; gap:14px; }
+
+  label.field-label { display:block; font-size:11px; color:#6e7681; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
+  input[type=password], input[type=text], input[type=search] {
+    width:100%; background:#0d1117; border:1px solid #30363d; border-radius:6px;
+    padding:10px 14px; color:#c9d1d9; font-family:'Courier New',monospace;
+    font-size:14px; outline:none; transition:border-color 0.15s; -webkit-appearance:none;
+  }
+  input:focus { border-color:#58a6ff; }
+  input:disabled { opacity:0.5; cursor:not-allowed; }
+  textarea { width:100%; background:#0d1117; border:none; border-bottom:1px solid #21262d; color:#c9d1d9; font-family:'Courier New',monospace; font-size:12px; line-height:1.7; padding:14px; resize:vertical; outline:none; min-height:200px; }
+  textarea[readonly] { color:#8b949e; }
+  textarea:disabled  { color:#8b949e; }
+
+  .btn { display:inline-flex; align-items:center; gap:8px; border-radius:6px; font-family:'Courier New',monospace; font-weight:600; cursor:pointer; border:1px solid; transition:opacity 0.15s; white-space:nowrap; font-size:13px; padding:10px 18px; -webkit-tap-highlight-color:transparent; }
+  .btn:disabled { opacity:0.6; cursor:not-allowed; }
+  .btn-primary   { background:#238636; border-color:#2ea04399; color:#fff; }
+  .btn-secondary { background:#21262d; border-color:#30363d;   color:#c9d1d9; }
+  .btn-ghost     { background:transparent; border-color:#30363d; color:#8b949e; }
+  .btn-green     { background:#1a4731; border-color:#3fb95044; color:#3fb950; }
+  .btn-small     { font-size:12px; padding:6px 12px; }
+  .spinner { width:12px; height:12px; border:2px solid transparent; border-top-color:currentColor; border-radius:50%; animation:spin 0.8s linear infinite; display:inline-block; flex-shrink:0; }
+
+  .console-bar  { background:#161b22; border-bottom:1px solid #21262d; padding:8px 14px; display:flex; gap:6px; align-items:center; }
+  .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .console-body { padding:12px 14px; display:flex; flex-direction:column; gap:2px; max-height:240px; overflow-y:auto; }
+  .log-line { animation:slideIn 0.2s ease forwards; font-size:13px; line-height:1.8; display:flex; align-items:flex-start; gap:8px; word-break:break-word; }
+  .log-pulse { width:8px; height:8px; border-radius:50%; animation:pulse 1.2s ease-in-out infinite; display:inline-block; flex-shrink:0; margin-top:6px; }
+
+  .dropdown { position:relative; }
+  .dropdown-trigger { width:100%; background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:10px 14px; color:#c9d1d9; font-family:'Courier New',monospace; font-size:13px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; user-select:none; transition:border-color 0.15s; -webkit-tap-highlight-color:transparent; text-align:left; }
+  .dropdown-trigger.open { border-color:#58a6ff; }
+  .dropdown-menu { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#161b22; border:1px solid #30363d; border-radius:6px; z-index:200; max-height:280px; display:flex; flex-direction:column; box-shadow:0 8px 24px #00000099; }
+  .dropdown-search { padding:8px; border-bottom:1px solid #21262d; }
+  .dropdown-list { overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; }
+  .dropdown-item { padding:10px 14px; cursor:pointer; border-bottom:1px solid #21262d22; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .dropdown-item:active { background:#1f2937; }
+  .dropdown-item-name { font-size:13px; color:#c9d1d9; font-weight:500; }
+  .dropdown-item-desc { font-size:11px; color:#6e7681; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:240px; }
+  .dropdown-item-tags { display:flex; gap:5px; align-items:center; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
+  .tag { font-size:10px; color:#8b949e; background:#21262d; padding:1px 6px; border-radius:3px; }
+  .tag-private { font-size:10px; color:#6e7681; border:1px solid #30363d; padding:1px 5px; border-radius:3px; }
+  .dropdown-footer { padding:5px 14px; border-top:1px solid #21262d; font-size:11px; color:#6e7681; }
+
+  .error-box { background:#160b0b; border:1px solid #f8514933; border-radius:8px; padding:14px; animation:fadeIn 0.3s ease; }
+  .saved-banner { background:#0d2318; border:1px solid #3fb95033; border-radius:6px; padding:10px 14px; font-size:12px; color:#3fb950; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .field-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .field-hint { font-size:11px; color:#6e7681; }
+  .field-hint a { color:#58a6ff; text-decoration:none; }
+  .action-row  { display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:12px 14px; border-top:1px solid #21262d; }
+  .action-hint { font-size:11px; color:#6e7681; }
+
+  .provider-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .provider-btn { background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:10px 12px; cursor:pointer; text-align:center; transition:all 0.15s; -webkit-tap-highlight-color:transparent; }
+  .provider-btn:active, .provider-btn.selected { border-color:#58a6ff; background:#161b22; }
+  .provider-btn .p-name { font-size:13px; color:#c9d1d9; font-weight:600; margin-top:2px; }
+  .provider-btn .p-note { font-size:10px; color:#6e7681; margin-top:2px; }
+  .provider-btn.selected .p-name { color:#58a6ff; }
+  .info-box { background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px 14px; font-size:12px; color:#8b949e; line-height:1.7; }
+  .info-box a { color:#58a6ff; text-decoration:none; }
+
+  /* progress bar */
+  .progress-wrap { background:#161b22; border:1px solid #21262d; border-radius:6px; overflow:hidden; }
+  .progress-bar  { height:4px; background:#58a6ff; transition:width 0.3s ease; }
+  .progress-label { font-size:11px; color:#6e7681; padding:6px 10px; }
+
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:#0d1117; }
+  ::-webkit-scrollbar-thumb { background:#30363d; border-radius:3px; }
+  @media (max-width:480px) { .btn { font-size:13px; padding:11px 14px; } .action-hint { display:none; } }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="header">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="title">README<span>.</span>gen</span>
+        <span id="badge" class="badge"></span>
+      </div>
+      <div class="subtitle">Deep LLM context doc — reads every file, maps full architecture</div>
+    </div>
+    <button id="btn-reset" class="btn btn-ghost btn-small" style="display:none" onclick="appReset()">↺ Reset</button>
+  </div>
+
+  <div class="stepbar">
+    <div class="stepbar-item active" id="step-1">1. Connect</div>
+    <div class="stepbar-item" id="step-2">2. Pick Repo</div>
+    <div class="stepbar-item" id="step-3">3. Backup</div>
+    <div class="stepbar-item" id="step-4">4. Analyse</div>
+    <div class="stepbar-item" id="step-5">5. Push</div>
+  </div>
+
+  <!-- Auth card -->
+  <div class="card" id="card-auth">
+    <div class="card-header">
+      <div class="card-header-left"><span>🔑</span><span class="card-header-title">Keys &amp; Provider</span></div>
+      <button class="btn btn-ghost btn-small" id="btn-clear-saved" onclick="clearSaved()" style="display:none">🗑 Clear</button>
+    </div>
+    <div class="card-body">
+      <div class="saved-banner" id="saved-banner" style="display:none">
+        <span>✓ Keys loaded from saved settings</span>
+        <span style="font-size:11px;color:#6e7681" id="saved-detail"></span>
+      </div>
+
+      <div>
+        <div class="field-row">
+          <label class="field-label" style="margin:0">GitHub PAT</label>
+          <span style="font-size:11px;color:#6e7681" id="token-type-hint"></span>
+        </div>
+        <input type="password" id="pat-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="onKeyInput()" autocomplete="off" spellcheck="false" />
+        <div style="font-size:11px;color:#6e7681;margin-top:5px">github.com → Settings → Developer Settings → PAT → Tokens (classic) → <strong style="color:#3fb950">repo</strong> scope</div>
+      </div>
+
+      <div>
+        <label class="field-label">LLM Provider</label>
+        <div class="provider-grid" id="provider-grid">
+          <div class="provider-btn selected" onclick="selectProvider('groq')"      id="p-groq">      <div>⚡</div><div class="p-name">Groq</div>      <div class="p-note">Free · fast</div></div>
+          <div class="provider-btn"          onclick="selectProvider('anthropic')" id="p-anthropic"> <div>🧠</div><div class="p-name">Anthropic</div><div class="p-note">Claude · paid</div></div>
+          <div class="provider-btn"          onclick="selectProvider('openai')"    id="p-openai">    <div>🤖</div><div class="p-name">OpenAI</div>   <div class="p-note">GPT-4o · paid</div></div>
+          <div class="provider-btn"          onclick="selectProvider('gemini')"    id="p-gemini">    <div>✨</div><div class="p-name">Gemini</div>    <div class="p-note">Free tier</div></div>
+          <div class="provider-btn"          onclick="selectProvider('mistral')"   id="p-mistral">   <div>🌪</div><div class="p-name">Mistral</div>   <div class="p-note">Free tier</div></div>
+          <div class="provider-btn"          onclick="selectProvider('custom')"    id="p-custom">    <div>🔧</div><div class="p-name">Custom</div>    <div class="p-note">Any OpenAI-compat</div></div>
+        </div>
+      </div>
+
+      <div id="provider-info" class="info-box"></div>
+
+      <div>
+        <div class="field-row">
+          <label class="field-label" style="margin:0" id="llm-key-label">LLM API Key</label>
+          <span class="field-hint" id="llm-key-link"></span>
+        </div>
+        <input type="password" id="llm-key-input" placeholder="" oninput="onKeyInput()" autocomplete="off" spellcheck="false" />
+      </div>
+
+      <div id="custom-endpoint-row" style="display:none">
+        <div class="field-row"><label class="field-label" style="margin:0">API Endpoint</label></div>
+        <input type="text" id="custom-endpoint" placeholder="https://your-api.com/v1/chat/completions" oninput="onKeyInput()" autocomplete="off" />
+      </div>
+      <div id="custom-model-row" style="display:none">
+        <div class="field-row"><label class="field-label" style="margin:0">Model Name</label></div>
+        <input type="text" id="custom-model" placeholder="e.g. gpt-4o, llama-3.3-70b" oninput="onKeyInput()" autocomplete="off" />
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-primary" id="btn-load-repos" onclick="loadRepos()" disabled>→ Connect &amp; load repos</button>
+        <button class="btn btn-green btn-small" id="btn-save-keys" onclick="saveKeys()" disabled>💾 Save keys</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repo selector -->
+  <div class="card" id="card-repo" style="display:none">
+    <div class="card-header">
+      <div class="card-header-left"><span>📁</span><span class="card-header-title">Select Repository</span><span class="card-header-sub" id="repo-count-label"></span></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <label class="field-label">Repository</label>
+        <div class="dropdown" id="repo-dropdown">
+          <button class="dropdown-trigger" id="dropdown-trigger" onclick="toggleDropdown()">
+            <span id="dropdown-label" style="color:#6e7681">Select a repository…</span>
+            <span id="dropdown-arrow" style="color:#6e7681;font-size:10px">▼</span>
+          </button>
+          <div class="dropdown-menu" id="dropdown-menu" style="display:none">
+            <div class="dropdown-search"><input type="search" id="repo-search" placeholder="Filter repos…" oninput="filterRepos()" autocomplete="off" /></div>
+            <div class="dropdown-list" id="repo-list"></div>
+            <div class="dropdown-footer" id="repo-footer"></div>
+          </div>
+        </div>
+      </div>
+      <div id="repo-action-row" style="display:none">
+        <button class="btn btn-primary" id="btn-fetch-repo" onclick="fetchRepo()">→ Load repo &amp; check README</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Console -->
+  <div class="card" id="card-log" style="display:none">
+    <div class="console-bar">
+      <span class="dot" style="background:#ff5f57"></span>
+      <span class="dot" style="background:#febc2e"></span>
+      <span class="dot" style="background:#28c840"></span>
+      <span style="font-size:11px;color:#6e7681;margin-left:6px">console</span>
+    </div>
+    <div class="console-body" id="log-body"></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card" id="card-progress" style="display:none">
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progress-label">Preparing…</div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-box" id="error-box" style="display:none">
+    <div id="error-text" style="font-size:13px;color:#f85149;word-break:break-word"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-small" onclick="goToStep('credentials')">↺ Try again</button>
+      <button class="btn btn-secondary btn-small" id="btn-back-repos" style="display:none" onclick="goToStep('select_repo')">← Back to repos</button>
+    </div>
+  </div>
+
+  <!-- Existing README -->
+  <div class="card" id="card-existing" style="display:none">
+    <div class="card-header">
+      <div class="card-header-left"><span id="existing-icon">📄</span><span class="card-header-title" id="existing-title">Existing README.md</span><span class="card-header-sub" id="existing-sub"></span></div>
+      <button class="btn btn-secondary btn-small" id="btn-backup" onclick="downloadBackup()" style="display:none">↓ Backup</button>
+    </div>
+    <div id="existing-body"></div>
+    <div class="action-row" id="existing-action" style="display:none">
+      <button class="btn btn-primary" id="btn-generate" onclick="generate()">✦ Deep analyse &amp; generate</button>
+      <span class="action-hint" id="existing-hint"></span>
+    </div>
+  </div>
+
+  <!-- Generated README -->
+  <div class="card" id="card-generated" style="display:none">
+    <div class="card-header">
+      <div class="card-header-left"><span>✨</span><span class="card-header-title">Generated README.md</span><span class="card-header-sub" id="generated-sub"></span></div>
+      <button class="btn btn-secondary btn-small" onclick="downloadGenerated()">↓ Download</button>
+    </div>
+    <textarea id="generated-textarea" placeholder="README content will appear here…"></textarea>
+    <div class="action-row" id="generated-action">
+      <button class="btn btn-primary" id="btn-push" onclick="push()">↑ Push to GitHub</button>
+      <span class="action-hint">Commits as "docs: generate README via Claude AI"</span>
+    </div>
+    <div class="action-row" id="done-row" style="display:none">
+      <span style="color:#3fb950;font-size:13px;font-weight:600">✓ Pushed successfully</span>
+      <a id="github-link" href="#" target="_blank" style="color:#58a6ff;font-size:12px;text-decoration:none">View on GitHub ↗</a>
+    </div>
+  </div>
+
+</div>
+<script>
+// ── Provider config ────────────────────────────────────────────────────────
+const PROVIDERS = {
+  groq:      { name:'Groq',             placeholder:'gsk_xxxxxxxxxxxxxxxxxxxx',      endpoint:'https://api.groq.com/openai/v1/chat/completions',                              model:'llama-3.3-70b-versatile',    format:'openai',    info:'🆓 Free tier — no credit card. Get key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com</a>' },
+  anthropic: { name:'Anthropic (Claude)',placeholder:'sk-ant-xxxxxxxxxxxxxxxxxxxx',   endpoint:'https://api.anthropic.com/v1/messages',                                        model:'claude-sonnet-4-20250514',   format:'anthropic', info:'Paid API. Get key at <a href="https://console.anthropic.com/keys" target="_blank">console.anthropic.com</a>' },
+  openai:    { name:'OpenAI',           placeholder:'sk-xxxxxxxxxxxxxxxxxxxx',        endpoint:'https://api.openai.com/v1/chat/completions',                                   model:'gpt-4o',                     format:'openai',    info:'Paid API. Get key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>' },
+  gemini:    { name:'Gemini',           placeholder:'AIzaxxxxxxxxxxxxxxxxxx',         endpoint:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',     model:'gemini-2.0-flash',           format:'openai',    info:'🆓 Free tier. Get key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a>' },
+  mistral:   { name:'Mistral',          placeholder:'xxxxxxxxxxxxxxxxxxxx',           endpoint:'https://api.mistral.ai/v1/chat/completions',                                   model:'mistral-large-latest',       format:'openai',    info:'🆓 Free tier. Get key at <a href="https://console.mistral.ai/api-keys" target="_blank">console.mistral.ai</a>' },
+  custom:    { name:'Custom',           placeholder:'your-api-key',                  endpoint:'',                                                                             model:'',                           format:'openai',    info:'Any OpenAI-compatible API. Enter endpoint and model below.' },
+};
+
+// File extensions to read (skip binaries)
+const READABLE_EXTS = ['.py','.js','.ts','.jsx','.tsx','.go','.rs','.java','.rb','.cs','.cpp','.c','.h','.php','.swift','.kt','.scala','.r','.sh','.bash','.zsh','.ps1','.yaml','.yml','.json','.toml','.ini','.cfg','.conf','.env','.env.example','.md','.mdx','.txt','.rst','.html','.css','.scss','.sass','.less','.sql','.graphql','.proto','.xml','.gradle','.dockerfile','.makefile'];
+const READABLE_NAMES = ['dockerfile','makefile','procfile','gemfile','podfile','rakefile','vagrantfile','.gitignore','.env.example','requirements.txt','cargo.toml','go.mod','go.sum','package.json','package-lock.json','composer.json','pom.xml','build.gradle'];
+const SKIP_DIRS = ['node_modules','dist','build','.git','vendor','__pycache__','.next','.nuxt','coverage','venv','.venv','env'];
+const MAX_FILE_SIZE = 60000; // 60KB per file
+const MAX_FILES = 120;
+
+// ── State ──────────────────────────────────────────────────────────────────
+let state = {
+  step:'credentials', pat:'', llmKey:'', provider:'groq',
+  customEndpoint:'', customModel:'',
+  repos:[], selectedRepo:null, repoMeta:null, repoTree:null,
+  existingReadme:null, readme:'', isWorking:false,
+};
+
+// ── localStorage ───────────────────────────────────────────────────────────
+const LS_KEY = 'readmegen_v2';
+function saveKeys() {
+  localStorage.setItem(LS_KEY, JSON.stringify({ pat:state.pat, llmKey:state.llmKey, provider:state.provider, customEndpoint:state.customEndpoint, customModel:state.customModel }));
+  const btn = document.getElementById('btn-save-keys');
+  btn.innerHTML='✓ Saved!'; btn.style.borderColor='#3fb950';
+  setTimeout(()=>{ btn.innerHTML='💾 Save keys'; btn.style.borderColor=''; }, 2000);
+}
+function loadSavedKeys() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LS_KEY)||'null'); if(!s) return;
+    if(s.pat)      { state.pat=s.pat; document.getElementById('pat-input').value=s.pat; updateTokenHint(s.pat); }
+    if(s.provider) { state.provider=s.provider; selectProvider(s.provider, true); }
+    if(s.llmKey)   { state.llmKey=s.llmKey; document.getElementById('llm-key-input').value=s.llmKey; }
+    if(s.customEndpoint){ state.customEndpoint=s.customEndpoint; document.getElementById('custom-endpoint').value=s.customEndpoint; }
+    if(s.customModel)   { state.customModel=s.customModel; document.getElementById('custom-model').value=s.customModel; }
+    if(s.pat && s.llmKey) {
+      document.getElementById('saved-banner').style.display='';
+      document.getElementById('saved-detail').textContent=`${PROVIDERS[s.provider]?.name||s.provider} · PAT …${s.pat.slice(-4)}`;
+      document.getElementById('btn-clear-saved').style.display='';
+    }
+    checkBtnReady();
+  } catch {}
+}
+function clearSaved() {
+  localStorage.removeItem(LS_KEY);
+  document.getElementById('saved-banner').style.display='none';
+  document.getElementById('btn-clear-saved').style.display='none';
+  ['pat-input','llm-key-input'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('token-type-hint').textContent='';
+  state.pat=''; state.llmKey=''; checkBtnReady();
+}
+
+// ── Provider ───────────────────────────────────────────────────────────────
+function selectProvider(id, silent=false) {
+  state.provider=id;
+  const p=PROVIDERS[id];
+  document.querySelectorAll('.provider-btn').forEach(el=>el.classList.remove('selected'));
+  const btn=document.getElementById('p-'+id); if(btn) btn.classList.add('selected');
+  document.getElementById('provider-info').innerHTML=p.info;
+  document.getElementById('llm-key-input').placeholder=p.placeholder;
+  document.getElementById('llm-key-label').textContent=p.name+' API Key';
+  const isCustom=id==='custom';
+  document.getElementById('custom-endpoint-row').style.display=isCustom?'':'none';
+  document.getElementById('custom-model-row').style.display=isCustom?'':'none';
+  if(!silent) checkBtnReady();
+}
+
+// ── LLM call ───────────────────────────────────────────────────────────────
+async function callLLM(prompt, maxTokens=8000) {
+  const p=PROVIDERS[state.provider];
+  const endpoint=state.provider==='custom'?state.customEndpoint:p.endpoint;
+  const model=state.provider==='custom'?state.customModel:p.model;
+  if(!endpoint) throw new Error('No endpoint configured');
+
+  if(p.format==='anthropic') {
+    const res=await fetch(endpoint,{ method:'POST', headers:{ 'Content-Type':'application/json','x-api-key':state.llmKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true' }, body:JSON.stringify({ model, max_tokens:maxTokens, messages:[{role:'user',content:prompt}] }) });
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error?.message||`Anthropic error ${res.status}`);
+    return data.content?.find(b=>b.type==='text')?.text||'';
+  } else {
+    const res=await fetch(endpoint,{ method:'POST', headers:{ 'Content-Type':'application/json','Authorization':`Bearer ${state.llmKey}` }, body:JSON.stringify({ model, max_tokens:maxTokens, messages:[{role:'user',content:prompt}] }) });
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error?.message||`API error ${res.status}`);
+    return data.choices?.[0]?.message?.content||'';
+  }
+}
+
+// ── GitHub API ─────────────────────────────────────────────────────────────
+function authHeader(t){ return t.startsWith('github_pat_')?`Bearer ${t}`:`token ${t}`; }
+async function ghFetch(path, token, opts={}) {
+  let res,data;
+  try { res=await fetch(`https://api.github.com${path}`,{...opts,headers:{Authorization:authHeader(token),Accept:'application/vnd.github.v3+json',...(opts.body?{'Content-Type':'application/json'}:{}),...(opts.headers||{})}}); }
+  catch(e){ throw new Error(`Network error (${e.message})`); }
+  try { data=await res.json(); } catch { throw new Error(`GitHub non-JSON (${res.status})`); }
+  if(!res.ok){ const hint=res.status===401?' — Token invalid.':res.status===403?' — Missing repo scope.':res.status===404?' — Not found.':''; throw new Error(`${data.message||'GitHub error'}${hint} [${res.status}]`); }
+  return data;
+}
+async function fetchAllRepos(token) {
+  let page=1,all=[];
+  while(true){ const b=await ghFetch(`/user/repos?per_page=100&page=${page}&sort=updated&affiliation=owner,collaborator,organization_member`,token); all=[...all,...b]; if(b.length<100||++page>10) break; }
+  return all;
+}
+async function fetchExistingReadme(owner,repo,token) {
+  try { const d=await ghFetch(`/repos/${owner}/${repo}/contents/README.md`,token); if(d.content) return{content:atob(d.content.replace(/\n/g,'')),sha:d.sha,exists:true}; }
+  catch(e){ if(/Not Found|404|not found/i.test(e.message)) return{exists:false}; throw e; }
+  return{exists:false};
+}
+
+// ── Deep file reading ──────────────────────────────────────────────────────
+function isReadable(path) {
+  const lower=path.toLowerCase();
+  const name=lower.split('/').pop();
+  if(SKIP_DIRS.some(d=>lower.includes('/'+d+'/')||lower.startsWith(d+'/'))) return false;
+  if(READABLE_NAMES.includes(name)) return true;
+  return READABLE_EXTS.some(ext=>lower.endsWith(ext));
+}
+
+async function fetchAllFiles(owner, repo, token, tree) {
+  const readable = tree
+    .filter(f => f.type==='blob' && f.size>0 && f.size<MAX_FILE_SIZE && isReadable(f.path))
+    .slice(0, MAX_FILES);
+  return readable;
+}
+
+async function fetchFileContent(owner, repo, token, path) {
+  try {
+    const d=await ghFetch(`/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`,token);
+    if(d.content) return atob(d.content.replace(/\n/g,''));
+  } catch {}
+  return null;
+}
+
+// ── Pass 1: summarise each file ────────────────────────────────────────────
+async function summariseFileBatch(files) {
+  // Build a single prompt to summarise all files in one call
+  const sections = files.map(f =>
+    `### FILE: ${f.path}\n\`\`\`\n${f.content.slice(0,4000)}\n\`\`\`\n`
+  ).join('\n');
+
+  const prompt = `You are a senior software architect analysing source code files.
+
+For each FILE listed below, provide a concise but technically complete summary covering:
+- What the file does (its purpose and role in the project)
+- Key classes, functions, or components it defines (with brief descriptions of each)
+- What it imports/depends on (external and internal)
+- What other files likely depend on it
+- Any important configuration, constants, or patterns used
+
+Format your response as:
+## FILE: <path>
+<summary>
+
+Do this for every file. Be technical and precise — this output will be used to build a complete architectural context document.
+
+${sections}`;
+
+  return callLLM(prompt, 8000);
+}
+
+// ── Pass 2: synthesise full README ─────────────────────────────────────────
+async function synthesiseReadme(owner, repo, repoMeta, allPaths, fileSummaries, existingReadme) {
+  const existingCtx = existingReadme?.exists
+    ? `\n\nEXISTING README (use as reference, improve upon it):\n${existingReadme.content.slice(0,2000)}`
+    : '';
+
+  const prompt = `You are a senior software architect writing a comprehensive technical context document (README.md) for a software repository. This document will be given to another LLM as its primary context for understanding and continuing work on this codebase. It must be complete, precise, and technically deep.
+
+Repository: ${owner}/${repo}
+Description: ${repoMeta.description||'N/A'}
+Primary language: ${repoMeta.language||'N/A'}
+Total files analysed: ${allPaths.length}${existingCtx}
+
+FULL FILE TREE:
+\`\`\`
+${allPaths.map(f=>f.path).join('\n')}
+\`\`\`
+
+DETAILED FILE SUMMARIES (every file analysed individually):
+${fileSummaries}
+
+Write a README.md that includes ALL of the following sections:
+
+# Project Title
+One-line description. Badges (shields.io placeholders).
+
+## Overview
+What this project does, its purpose, and the problem it solves.
+
+## Architecture
+How the codebase is structured. Key architectural decisions. Design patterns used. High-level data flow from input to output.
+
+## File & Module Reference
+For EVERY file in the repo: its path, purpose, key functions/classes, and how it connects to other files. Group logically by folder/module. This section must be exhaustive.
+
+## Data Flow & Interactions
+Step-by-step description of how data flows through the system. Which files call which. Entry points and exit points.
+
+## Dependencies
+All external libraries and frameworks. What each is used for. Version constraints if known.
+
+## Setup & Installation
+Step-by-step setup. Environment variables needed (from .env.example if present). How to run locally. How to run tests if test files exist.
+
+## Configuration
+All configuration files and what each option controls.
+
+## Key Concepts & Patterns
+Important patterns, abstractions, or domain concepts an LLM needs to understand to work on this codebase.
+
+## Contributing
+How to add features, naming conventions, code style.
+
+Be exhaustive. A developer or LLM reading this document should be able to fully understand and work on this codebase without looking at any other file. Use actual file names, function names, and class names from the summaries above.`;
+
+  return callLLM(prompt, 8000);
+}
+
+// ── Logging / UI helpers ───────────────────────────────────────────────────
+const LOG_COLORS = { default:'#c9d1d9',success:'#3fb950',error:'#f85149',info:'#58a6ff',muted:'#6e7681',accent:'#d2a8ff',warn:'#e3b341' };
+function addLog(text,type='default',animate=false) {
+  const body=document.getElementById('log-body');
+  document.getElementById('card-log').style.display='';
+  const c=LOG_COLORS[type]||LOG_COLORS.default;
+  const div=document.createElement('div'); div.className='log-line'; div.style.color=c;
+  if(animate){ const dot=document.createElement('span'); dot.className='log-pulse'; dot.id='anim-dot'; dot.style.background=c; dot.style.boxShadow=`0 0 6px ${c}`; div.appendChild(dot); }
+  const span=document.createElement('span'); span.textContent=text; div.appendChild(span);
+  const old=document.getElementById('anim-dot'); if(old) old.removeAttribute('id');
+  body.appendChild(div); body.scrollTop=body.scrollHeight;
+}
+function clearLogs(){ document.getElementById('log-body').innerHTML=''; document.getElementById('card-log').style.display='none'; }
+function setProgress(pct, label) {
+  document.getElementById('card-progress').style.display='';
+  document.getElementById('progress-bar').style.width=pct+'%';
+  document.getElementById('progress-label').textContent=label;
+  if(pct>=100) setTimeout(()=>{ document.getElementById('card-progress').style.display='none'; },1000);
+}
+
+const BADGE_MAP = { credentials:{label:'READY',color:'#58a6ff'},loading_repos:{label:'LOADING',color:'#d2a8ff'},select_repo:{label:'SELECT REPO',color:'#e3b341'},fetching:{label:'FETCHING',color:'#d2a8ff'},existing:{label:'REVIEW',color:'#e3b341'},analyzing:{label:'ANALYSING',color:'#d2a8ff'},preview:{label:'PREVIEW',color:'#3fb950'},pushing:{label:'PUSHING',color:'#e3b341'},done:{label:'PUSHED ✓',color:'#3fb950'},error:{label:'ERROR',color:'#f85149'} };
+const STEP_BAR_MAP = { credentials:1,loading_repos:1,select_repo:2,fetching:2,existing:3,analyzing:4,preview:5,pushing:5,done:5,error:0 };
+function updateBadge(step) {
+  const {label,color}=BADGE_MAP[step]||BADGE_MAP.credentials;
+  const el=document.getElementById('badge'); el.textContent=label; el.style.color=color; el.style.background=color+'18'; el.style.borderColor=color+'44';
+  for(let i=1;i<=5;i++) document.getElementById(`step-${i}`).classList.toggle('active',STEP_BAR_MAP[step]===i);
+}
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function show(id){ const el=document.getElementById(id); if(el) el.style.display=''; }
+function hide(id){ const el=document.getElementById(id); if(el) el.style.display='none'; }
+function setText(id,t){ const el=document.getElementById(id); if(el) el.textContent=t; }
+function showError(msg){ show('error-box'); document.getElementById('error-text').textContent='✗ '+msg; document.getElementById('btn-back-repos').style.display=state.repos.length>0?'':'none'; }
+function hideError(){ hide('error-box'); }
+function downloadFile(c,f){ const b=new Blob([c],{type:'text/markdown'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=f; a.click(); URL.revokeObjectURL(u); }
+function downloadBackup(){ if(state.existingReadme?.content) downloadFile(state.existingReadme.content,'README.backup.md'); }
+function downloadGenerated(){ downloadFile(document.getElementById('generated-textarea').value,'README.md'); }
+function updateTokenHint(val){ document.getElementById('token-type-hint').textContent=val.startsWith('github_pat_')?'🟡 fine-grained':val.startsWith('ghp_')?'🟢 classic token':''; }
+function onKeyInput(){
+  state.pat=document.getElementById('pat-input').value.trim();
+  state.llmKey=document.getElementById('llm-key-input').value.trim();
+  state.customEndpoint=document.getElementById('custom-endpoint').value.trim();
+  state.customModel=document.getElementById('custom-model').value.trim();
+  updateTokenHint(state.pat); checkBtnReady();
+}
+function checkBtnReady(){
+  const ready=!!(state.pat&&state.llmKey&&(state.provider!=='custom'||(state.customEndpoint&&state.customModel)));
+  document.getElementById('btn-load-repos').disabled=!ready;
+  document.getElementById('btn-save-keys').disabled=!ready;
+}
+
+// ── Repo dropdown ──────────────────────────────────────────────────────────
+function renderRepoList(repos,filter=''){
+  const list=document.getElementById('repo-list'); list.innerHTML='';
+  const filtered=repos.filter(r=>r.full_name.toLowerCase().includes(filter.toLowerCase())||(r.description||'').toLowerCase().includes(filter.toLowerCase())).slice(0,60);
+  if(!filtered.length){ list.innerHTML='<div style="padding:12px 14px;color:#6e7681;font-size:12px">No repos match</div>'; }
+  else filtered.forEach(r=>{ const item=document.createElement('div'); item.className='dropdown-item'; item.innerHTML=`<div style="min-width:0;flex:1"><div class="dropdown-item-name">${r.private?'🔒':'📂'} ${escHtml(r.full_name)}</div>${r.description?`<div class="dropdown-item-desc">${escHtml(r.description)}</div>`:''}</div><div class="dropdown-item-tags">${r.language?`<span class="tag">${escHtml(r.language)}</span>`:''} ${r.private?`<span class="tag-private">private</span>`:''}</div>`; item.addEventListener('click',()=>selectRepo(r)); list.appendChild(item); });
+  document.getElementById('repo-footer').textContent=`${filtered.length} of ${repos.length} repos`;
+}
+function toggleDropdown(){
+  const menu=document.getElementById('dropdown-menu'),trigger=document.getElementById('dropdown-trigger'),arrow=document.getElementById('dropdown-arrow');
+  const isOpen=menu.style.display!=='none';
+  if(isOpen){ menu.style.display='none'; trigger.classList.remove('open'); arrow.textContent='▼'; }
+  else{ menu.style.display=''; trigger.classList.add('open'); arrow.textContent='▲'; document.getElementById('repo-search').value=''; renderRepoList(state.repos); setTimeout(()=>document.getElementById('repo-search').focus(),50); }
+}
+function filterRepos(){ renderRepoList(state.repos,document.getElementById('repo-search').value); }
+function selectRepo(repo){
+  state.selectedRepo=repo;
+  const label=document.getElementById('dropdown-label'); label.style.color='#c9d1d9';
+  label.textContent=(repo.private?'🔒 ':'📂 ')+repo.full_name+(repo.language?` [${repo.language}]`:'');
+  document.getElementById('dropdown-menu').style.display='none'; document.getElementById('dropdown-trigger').classList.remove('open'); document.getElementById('dropdown-arrow').textContent='▼';
+  show('repo-action-row');
+}
+document.addEventListener('click',e=>{ const dd=document.getElementById('repo-dropdown'); if(dd&&!dd.contains(e.target)){ document.getElementById('dropdown-menu').style.display='none'; document.getElementById('dropdown-trigger').classList.remove('open'); document.getElementById('dropdown-arrow').textContent='▼'; } });
+
+// ── Steps ──────────────────────────────────────────────────────────────────
+async function loadRepos(){
+  hideError(); clearLogs(); goToStep('loading_repos');
+  try {
+    addLog('→ Authenticating with GitHub...','info',true);
+    const user=await ghFetch('/user',state.pat);
+    addLog(`✓ Signed in as @${user.login}`,'success');
+    addLog('→ Loading repositories...','info',true);
+    const repos=await fetchAllRepos(state.pat);
+    state.repos=repos;
+    addLog(`✓ ${repos.length} repos (${repos.filter(r=>r.private).length} private)`,'success');
+    renderRepoList(repos);
+    document.getElementById('repo-count-label').textContent=`${repos.length} repos · ${repos.filter(r=>r.private).length} private`;
+    show('card-repo'); goToStep('select_repo');
+  } catch(e){ showError(e.message); addLog('✗ '+e.message,'error'); goToStep('error'); }
+}
+
+async function fetchRepo(){
+  if(!state.selectedRepo) return;
+  hideError(); goToStep('fetching');
+  const r=state.selectedRepo, owner=r.owner.login, repo=r.name, branch=r.default_branch;
+  try {
+    addLog(`→ Loading ${owner}/${repo}...`,'info',true);
+    const treeData=await ghFetch(`/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,state.pat);
+    state.repoTree=treeData.tree;
+    state.repoMeta={owner,repo,branch,description:r.description,language:r.language,stars:r.stargazers_count};
+    const totalFiles=state.repoTree.filter(f=>f.type==='blob').length;
+    const readableFiles=state.repoTree.filter(f=>f.type==='blob'&&isReadable(f.path)&&f.size<MAX_FILE_SIZE).length;
+    addLog(`✓ ${totalFiles} total files · ${readableFiles} readable · branch '${branch}'`,'success');
+    addLog('→ Checking for existing README...','info',true);
+    const existing=await fetchExistingReadme(owner,repo,state.pat);
+    state.existingReadme=existing;
+    existing.exists?addLog(`✓ Found README.md (${existing.content.length.toLocaleString()} chars)`,'warn'):addLog('ℹ No README.md — will create from scratch','info');
+    renderExistingCard(existing);
+    goToStep('existing');
+  } catch(e){ showError(e.message); addLog('✗ '+e.message,'error'); goToStep('error'); }
+}
+
+function renderExistingCard(existing){
+  show('card-existing');
+  if(existing.exists){
+    setText('existing-icon','📄'); setText('existing-title','Existing README.md'); setText('existing-sub',existing.content.length.toLocaleString()+' chars'); show('btn-backup');
+    document.getElementById('existing-body').innerHTML=`<textarea readonly style="height:140px">${escHtml(existing.content)}</textarea>`;
+    setText('btn-generate','✦ Deep analyse & regenerate'); setText('existing-hint','Tip: download backup first');
+  } else {
+    setText('existing-icon','🆕'); setText('existing-title','No README found'); setText('existing-sub',''); hide('btn-backup');
+    document.getElementById('existing-body').innerHTML=`<div style="padding:14px;color:#6e7681;font-size:13px">✦ Will read every file and generate a deep architectural context document.</div>`;
+    setText('btn-generate','✦ Deep analyse & generate'); setText('existing-hint','');
+  }
+  show('existing-action');
+}
+
+async function generate(){
+  hideError(); goToStep('analyzing'); hide('existing-action');
+  const {owner,repo}=state.repoMeta;
+  try {
+    // ── Fetch all readable files ──
+    addLog('→ Scanning all files...','info',true);
+    const allReadable=await fetchAllFiles(owner,repo,state.pat,state.repoTree);
+    addLog(`✓ ${allReadable.length} files to read (skipping binaries & dependencies)`,'success');
+
+    // ── Read file contents in parallel batches ──
+    setProgress(5,'Reading files from GitHub…');
+    const BATCH=8;
+    const filesWithContent=[];
+    for(let i=0;i<allReadable.length;i+=BATCH){
+      const batch=allReadable.slice(i,i+BATCH);
+      const results=await Promise.all(batch.map(f=>fetchFileContent(owner,repo,state.pat,f.path).then(content=>({...f,content}))));
+      results.forEach(f=>{ if(f.content) filesWithContent.push(f); });
+      const pct=Math.round(((i+BATCH)/allReadable.length)*40)+5;
+      setProgress(Math.min(pct,45),`Reading files… ${Math.min(i+BATCH,allReadable.length)}/${allReadable.length}`);
+      addLog(`  ↳ Read ${Math.min(i+BATCH,allReadable.length)}/${allReadable.length} files`,'muted');
+    }
+    addLog(`✓ ${filesWithContent.length} files loaded (${Math.round(filesWithContent.reduce((a,f)=>a+f.content.length,0)/1024)}KB total)`,'success');
+
+    // ── Pass 1: summarise files in batches of 15 ──
+    setProgress(50,`Pass 1 — summarising files with ${PROVIDERS[state.provider].name}…`);
+    addLog(`→ Pass 1: summarising all files with ${PROVIDERS[state.provider].name}...`,'accent',true);
+    const SUMMARY_BATCH=15;
+    let allSummaries='';
+    for(let i=0;i<filesWithContent.length;i+=SUMMARY_BATCH){
+      const batch=filesWithContent.slice(i,i+SUMMARY_BATCH);
+      addLog(`  ↳ Summarising files ${i+1}–${Math.min(i+SUMMARY_BATCH,filesWithContent.length)}...`,'muted');
+      const summary=await summariseFileBatch(batch);
+      allSummaries+=summary+'\n\n';
+      const pct=50+Math.round(((i+SUMMARY_BATCH)/filesWithContent.length)*25);
+      setProgress(Math.min(pct,75),`Pass 1 — ${Math.min(i+SUMMARY_BATCH,filesWithContent.length)}/${filesWithContent.length} files summarised…`);
+    }
+    addLog(`✓ All files summarised`,'success');
+
+    // ── Pass 2: synthesise full README ──
+    setProgress(80,`Pass 2 — synthesising full README…`);
+    addLog(`→ Pass 2: synthesising deep README...`,'accent',true);
+    const generated=await synthesiseReadme(owner,repo,state.repoMeta,allReadable,allSummaries,state.existingReadme);
+    if(!generated) throw new Error('No content returned from LLM');
+
+    setProgress(100,'Done!');
+    addLog(`✓ README generated (${generated.length.toLocaleString()} chars · ${generated.split('\n').length} lines)`,'success');
+    state.readme=generated;
+    renderGeneratedCard(generated);
+    goToStep('preview');
+  } catch(e){ showError(e.message); addLog('✗ '+e.message,'error'); show('existing-action'); goToStep('error'); }
+}
+
+function renderGeneratedCard(content){
+  show('card-generated');
+  const ta=document.getElementById('generated-textarea'); ta.value=content; ta.disabled=false;
+  setText('generated-sub',content.length.toLocaleString()+' chars · '+content.split('\n').length+' lines');
+  show('generated-action'); hide('done-row');
+  document.getElementById('btn-push').disabled=false; document.getElementById('btn-push').innerHTML='↑ Push to GitHub';
+}
+
+async function push(){
+  hideError(); goToStep('pushing');
+  const {owner,repo,branch}=state.repoMeta;
+  const content=document.getElementById('generated-textarea').value;
+  const btn=document.getElementById('btn-push'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Pushing...';
+  document.getElementById('generated-textarea').disabled=true;
+  addLog(`→ Pushing to ${owner}/${repo} (${branch})...`,'info',true);
+  try {
+    const body={message:'docs: generate deep README via Claude AI',content:btoa(unescape(encodeURIComponent(content))),branch};
+    if(state.existingReadme?.sha) body.sha=state.existingReadme.sha;
+    await ghFetch(`/repos/${owner}/${repo}/contents/README.md`,state.pat,{method:'PUT',body:JSON.stringify(body)});
+    addLog('✓ README.md committed','success'); addLog(`✓ github.com/${owner}/${repo}`,'success');
+    hide('generated-action'); document.getElementById('github-link').href=`https://github.com/${owner}/${repo}`; show('done-row');
+    goToStep('done');
+  } catch(e){
+    showError(e.message); addLog('✗ '+e.message,'error');
+    btn.disabled=false; btn.innerHTML='↑ Push to GitHub'; document.getElementById('generated-textarea').disabled=false;
+    goToStep('error');
+  }
+}
+
+function goToStep(step){
+  state.step=step; updateBadge(step);
+  state.isWorking=['loading_repos','fetching','analyzing','pushing'].includes(step);
+  document.getElementById('btn-reset').style.display=(!state.isWorking&&step!=='credentials')?'':'none';
+}
+
+function appReset(){
+  state={...state,step:'credentials',repos:[],selectedRepo:null,repoMeta:null,repoTree:null,existingReadme:null,readme:'',isWorking:false};
+  clearLogs(); hideError(); hide('card-repo'); hide('card-existing'); hide('card-generated'); hide('done-row'); hide('card-progress'); show('generated-action');
+  document.getElementById('existing-body').innerHTML='';
+  document.getElementById('dropdown-label').textContent='Select a repository…'; document.getElementById('dropdown-label').style.color='#6e7681';
+  document.getElementById('repo-action-row').style.display='none'; document.getElementById('generated-textarea').value='';
+  goToStep('credentials');
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+selectProvider('groq',true);
+loadSavedKeys();
+updateBadge('credentials');
+</script>
+</body>
+</html>
