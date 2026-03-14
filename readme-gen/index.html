@@ -1,1 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>README.gen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap');
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #010409;
+    color: #c9d1d9;
+    font-family: 'Courier New', monospace;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  @keyframes spin   { to{transform:rotate(360deg)} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideIn{ from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+  /* ── layout ── */
+  #app { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+  /* ── header ── */
+  .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .title  { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#fff; letter-spacing:-0.02em; }
+  .title span { color:#58a6ff; }
+  .subtitle { font-size:12px; color:#6e7681; margin-top:4px; }
+
+  /* ── step bar ── */
+  .stepbar { display:flex; }
+  .stepbar-item {
+    flex:1; padding:6px 2px; text-align:center; font-size:10px; border:1px solid #21262d;
+    color:#6e7681; transition:all 0.2s; margin-left:-1px;
+  }
+  .stepbar-item:first-child { border-radius:6px 0 0 6px; margin-left:0; }
+  .stepbar-item:last-child  { border-radius:0 6px 6px 0; }
+  .stepbar-item.active { background:#161b22; border-color:#58a6ff44; color:#58a6ff; }
+
+  /* ── badge ── */
+  .badge {
+    display:inline-block; font-size:10px; font-weight:700; border-radius:4px;
+    padding:2px 8px; letter-spacing:0.08em; border:1px solid;
+  }
+
+  /* ── card ── */
+  .card {
+    background:#0d1117; border:1px solid #21262d; border-radius:8px;
+    overflow:hidden; animation:fadeIn 0.3s ease;
+  }
+  .card-header {
+    display:flex; align-items:center; justify-content:space-between;
+    background:#161b22; border-bottom:1px solid #21262d; padding:10px 14px;
+  }
+  .card-header-left { display:flex; align-items:center; gap:8px; }
+  .card-header-title { font-size:13px; color:#c9d1d9; font-weight:600; }
+  .card-header-sub   { font-size:11px; color:#6e7681; }
+  .card-body { padding:16px; display:flex; flex-direction:column; gap:14px; }
+
+  /* ── inputs ── */
+  label.field-label {
+    display:block; font-size:11px; color:#6e7681;
+    letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;
+  }
+  input[type=password], input[type=text], input[type=search] {
+    width:100%; background:#0d1117; border:1px solid #30363d; border-radius:6px;
+    padding:10px 14px; color:#c9d1d9; font-family:'Courier New',monospace;
+    font-size:14px; outline:none; transition:border-color 0.15s; -webkit-appearance:none;
+  }
+  input:focus { border-color:#58a6ff; }
+  input:disabled { opacity:0.5; cursor:not-allowed; }
+  textarea {
+    width:100%; background:#0d1117; border:none; border-bottom:1px solid #21262d;
+    color:#c9d1d9; font-family:'Courier New',monospace; font-size:12px;
+    line-height:1.7; padding:14px; resize:vertical; outline:none;
+    min-height:200px;
+  }
+  textarea[readonly] { color:#8b949e; }
+  textarea:disabled  { color:#8b949e; }
+
+  /* ── buttons ── */
+  .btn {
+    display:inline-flex; align-items:center; gap:8px; border-radius:6px;
+    font-family:'Courier New',monospace; font-weight:600; cursor:pointer;
+    border:1px solid; transition:opacity 0.15s; white-space:nowrap;
+    font-size:13px; padding:10px 18px; -webkit-tap-highlight-color:transparent;
+  }
+  .btn:disabled { opacity:0.6; cursor:not-allowed; }
+  .btn-primary  { background:#238636; border-color:#2ea04399; color:#fff; }
+  .btn-secondary{ background:#21262d; border-color:#30363d;   color:#c9d1d9; }
+  .btn-ghost    { background:transparent; border-color:#30363d; color:#8b949e; }
+  .btn-small    { font-size:12px; padding:6px 12px; }
+  .spinner {
+    width:12px; height:12px; border:2px solid transparent;
+    border-top-color:currentColor; border-radius:50%;
+    animation:spin 0.8s linear infinite; display:inline-block; flex-shrink:0;
+  }
+
+  /* ── log console ── */
+  .console-bar {
+    background:#161b22; border-bottom:1px solid #21262d;
+    padding:8px 14px; display:flex; gap:6px; align-items:center;
+  }
+  .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .console-body { padding:12px 14px; display:flex; flex-direction:column; gap:2px; }
+  .log-line { animation:slideIn 0.2s ease forwards; font-size:13px; line-height:1.8; display:flex; align-items:flex-start; gap:8px; word-break:break-word; }
+  .log-pulse { width:8px; height:8px; border-radius:50%; animation:pulse 1.2s ease-in-out infinite; display:inline-block; flex-shrink:0; margin-top:6px; }
+
+  /* ── repo dropdown ── */
+  .dropdown { position:relative; }
+  .dropdown-trigger {
+    width:100%; background:#0d1117; border:1px solid #30363d; border-radius:6px;
+    padding:10px 14px; color:#c9d1d9; font-family:'Courier New',monospace; font-size:13px;
+    cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+    user-select:none; transition:border-color 0.15s; -webkit-tap-highlight-color:transparent;
+    text-align:left;
+  }
+  .dropdown-trigger.open { border-color:#58a6ff; }
+  .dropdown-menu {
+    position:absolute; top:calc(100% + 4px); left:0; right:0;
+    background:#161b22; border:1px solid #30363d; border-radius:6px;
+    z-index:200; max-height:280px; display:flex; flex-direction:column;
+    box-shadow:0 8px 24px #00000099;
+  }
+  .dropdown-search { padding:8px; border-bottom:1px solid #21262d; }
+  .dropdown-search input { font-size:13px; }
+  .dropdown-list { overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; }
+  .dropdown-item {
+    padding:10px 14px; cursor:pointer; border-bottom:1px solid #21262d22;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+  }
+  .dropdown-item:active { background:#1f2937; }
+  .dropdown-item-name { font-size:13px; color:#c9d1d9; font-weight:500; }
+  .dropdown-item-desc { font-size:11px; color:#6e7681; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:240px; }
+  .dropdown-item-tags { display:flex; gap:5px; align-items:center; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
+  .tag { font-size:10px; color:#8b949e; background:#21262d; padding:1px 6px; border-radius:3px; }
+  .tag-private { font-size:10px; color:#6e7681; border:1px solid #30363d; padding:1px 5px; border-radius:3px; }
+  .dropdown-footer { padding:5px 14px; border-top:1px solid #21262d; font-size:11px; color:#6e7681; }
+
+  /* ── info box ── */
+  .info-box {
+    background:#161b22; border:1px solid #30363d; border-radius:6px;
+    padding:12px 14px; font-size:12px; color:#8b949e; line-height:1.7;
+  }
+  .info-box ol { padding-left:18px; display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+  .info-box strong { color:#c9d1d9; }
+  .info-box .blue { color:#58a6ff; }
+  .info-box .green { color:#3fb950; }
+  .info-box code { color:#d2a8ff; }
+
+  /* ── error box ── */
+  .error-box {
+    background:#160b0b; border:1px solid #f8514933; border-radius:8px;
+    padding:14px; animation:fadeIn 0.3s ease;
+  }
+
+  /* ── token hint ── */
+  .token-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .token-hint { font-size:11px; color:#6e7681; }
+
+  /* ── action row ── */
+  .action-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:12px 14px; border-top:1px solid #21262d; }
+  .action-hint { font-size:11px; color:#6e7681; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:#0d1117; }
+  ::-webkit-scrollbar-thumb { background:#30363d; border-radius:3px; }
+
+  /* mobile tweaks */
+  @media (max-width:480px) {
+    .btn { font-size:13px; padding:11px 14px; }
+    .action-hint { display:none; }
+    .dropdown-item-desc { max-width:160px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="title">README<span>.</span>gen</span>
+        <span id="badge" class="badge"></span>
+      </div>
+      <div class="subtitle">Connect → pick repo → backup → generate → push</div>
+    </div>
+    <button id="btn-reset" class="btn btn-ghost btn-small" style="display:none" onclick="reset()">↺ Reset</button>
+  </div>
+
+  <!-- Step bar -->
+  <div class="stepbar">
+    <div class="stepbar-item active" id="step-1">1. Connect</div>
+    <div class="stepbar-item" id="step-2">2. Pick Repo</div>
+    <div class="stepbar-item" id="step-3">3. Backup</div>
+    <div class="stepbar-item" id="step-4">4. Generate</div>
+    <div class="stepbar-item" id="step-5">5. Push</div>
+  </div>
+
+  <!-- Card: Auth -->
+  <div class="card" id="card-auth">
+    <div class="card-header">
+      <div class="card-header-left">
+        <span>🔑</span>
+        <span class="card-header-title">GitHub Authentication</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box">
+        <strong>How to create a PAT (classic token):</strong>
+        <ol>
+          <li>Go to <span class="blue">github.com → Settings → Developer Settings → Personal access tokens → Tokens (classic)</span></li>
+          <li>Click <strong>Generate new token (classic)</strong></li>
+          <li>Check the <span class="green"><strong>repo</strong></span> scope</li>
+          <li>Copy the token — starts with <code>ghp_</code></li>
+        </ol>
+      </div>
+      <div>
+        <div class="token-row">
+          <label class="field-label" style="margin:0">Personal Access Token</label>
+          <span class="token-hint" id="token-type-hint"></span>
+        </div>
+        <input type="password" id="pat-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="onPatInput()" autocomplete="off" autocorrect="off" spellcheck="false" />
+      </div>
+      <button class="btn btn-primary" id="btn-load-repos" onclick="loadRepos()" disabled>→ Load my repositories</button>
+    </div>
+  </div>
+
+  <!-- Card: Repo selector (hidden initially) -->
+  <div class="card" id="card-repo" style="display:none">
+    <div class="card-header">
+      <div class="card-header-left">
+        <span>📁</span>
+        <span class="card-header-title">Select Repository</span>
+        <span class="card-header-sub" id="repo-count-label"></span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div>
+        <label class="field-label">Repository</label>
+        <div class="dropdown" id="repo-dropdown">
+          <button class="dropdown-trigger" id="dropdown-trigger" onclick="toggleDropdown()">
+            <span id="dropdown-label" style="color:#6e7681">Select a repository…</span>
+            <span id="dropdown-arrow" style="color:#6e7681;font-size:10px">▼</span>
+          </button>
+          <div class="dropdown-menu" id="dropdown-menu" style="display:none">
+            <div class="dropdown-search">
+              <input type="search" id="repo-search" placeholder="Filter repos…" oninput="filterRepos()" autocomplete="off" />
+            </div>
+            <div class="dropdown-list" id="repo-list"></div>
+            <div class="dropdown-footer" id="repo-footer"></div>
+          </div>
+        </div>
+      </div>
+      <div id="repo-action-row" style="display:none">
+        <button class="btn btn-primary" id="btn-fetch-repo" onclick="fetchRepo()">→ Load repo &amp; check README</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Console log -->
+  <div class="card" id="card-log" style="display:none">
+    <div class="console-bar">
+      <span class="dot" style="background:#ff5f57"></span>
+      <span class="dot" style="background:#febc2e"></span>
+      <span class="dot" style="background:#28c840"></span>
+      <span style="font-size:11px;color:#6e7681;margin-left:6px">console</span>
+    </div>
+    <div class="console-body" id="log-body"></div>
+  </div>
+
+  <!-- Error box -->
+  <div class="error-box" id="error-box" style="display:none">
+    <div id="error-text" style="font-size:13px;color:#f85149;word-break:break-word"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-small" onclick="goToStep('credentials')">↺ Try again</button>
+      <button class="btn btn-secondary btn-small" id="btn-back-repos" style="display:none" onclick="goToStep('select_repo')">← Back to repos</button>
+    </div>
+  </div>
+
+  <!-- Card: Existing README -->
+  <div class="card" id="card-existing" style="display:none">
+    <div class="card-header">
+      <div class="card-header-left">
+        <span id="existing-icon">📄</span>
+        <span class="card-header-title" id="existing-title">Existing README.md</span>
+        <span class="card-header-sub" id="existing-sub"></span>
+      </div>
+      <button class="btn btn-secondary btn-small" id="btn-backup" onclick="downloadBackup()" style="display:none">↓ Download backup</button>
+    </div>
+    <div id="existing-body"></div>
+    <div class="action-row" id="existing-action" style="display:none">
+      <button class="btn btn-primary" id="btn-generate" onclick="generate()">✦ Generate README</button>
+      <span class="action-hint" id="existing-hint"></span>
+    </div>
+  </div>
+
+  <!-- Card: Generated README -->
+  <div class="card" id="card-generated" style="display:none">
+    <div class="card-header">
+      <div class="card-header-left">
+        <span>✨</span>
+        <span class="card-header-title">Generated README.md</span>
+        <span class="card-header-sub" id="generated-sub"></span>
+      </div>
+      <button class="btn btn-secondary btn-small" onclick="downloadGenerated()">↓ Download</button>
+    </div>
+    <textarea id="generated-textarea" placeholder="README content will appear here…"></textarea>
+    <div class="action-row" id="generated-action">
+      <button class="btn btn-primary" id="btn-push" onclick="push()">↑ Push to GitHub</button>
+      <span class="action-hint">Commits as "docs: generate README via Claude AI"</span>
+    </div>
+    <div class="action-row" id="done-row" style="display:none">
+      <span style="color:#3fb950;font-size:13px;font-weight:600">✓ Pushed successfully</span>
+      <a id="github-link" href="#" target="_blank" style="color:#58a6ff;font-size:12px;text-decoration:none">View on GitHub ↗</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let state = {
+  step: 'credentials',
+  pat: '',
+  repos: [],
+  selectedRepo: null,
+  repoMeta: null,
+  repoTree: null,
+  existingReadme: null,
+  readme: '',
+  isWorking: false,
+};
+
+// ── GitHub API ─────────────────────────────────────────────────────────────
+function authHeader(token) {
+  return token.startsWith('github_pat_') ? `Bearer ${token}` : `token ${token}`;
+}
+
+async function ghFetch(path, token, opts = {}) {
+  let res, data;
+  try {
+    res = await fetch(`https://api.github.com${path}`, {
+      ...opts,
+      headers: {
+        Authorization: authHeader(token),
+        Accept: 'application/vnd.github.v3+json',
+        ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(opts.headers || {}),
+      },
+    });
+  } catch (e) {
+    throw new Error(`Network error — cannot reach api.github.com (${e.message})`);
+  }
+  try { data = await res.json(); } catch { throw new Error(`GitHub returned non-JSON (status ${res.status})`); }
+  if (!res.ok) {
+    const hint =
+      res.status === 401 ? ' — Token invalid or expired.' :
+      res.status === 403 ? ' — Token missing repo scope.' :
+      res.status === 404 ? ' — Not found.' : '';
+    throw new Error(`${data.message || 'GitHub API error'}${hint} [HTTP ${res.status}]`);
+  }
+  return data;
+}
+
+async function fetchAllRepos(token) {
+  let page = 1, all = [];
+  while (true) {
+    const batch = await ghFetch(`/user/repos?per_page=100&page=${page}&sort=updated&affiliation=owner,collaborator,organization_member`, token);
+    all = [...all, ...batch];
+    if (batch.length < 100 || ++page > 10) break;
+  }
+  return all;
+}
+
+async function fetchExistingReadme(owner, repo, token) {
+  try {
+    const d = await ghFetch(`/repos/${owner}/${repo}/contents/README.md`, token);
+    if (d.content) return { content: atob(d.content.replace(/\n/g, '')), sha: d.sha, exists: true };
+  } catch (e) {
+    if (/Not Found|404|not found/i.test(e.message)) return { exists: false };
+    throw e;
+  }
+  return { exists: false };
+}
+
+async function doFetchKeyFiles(owner, repo, token, tree) {
+  const priority = ['package.json','requirements.txt','Cargo.toml','go.mod','pom.xml','pyproject.toml','composer.json','.env.example','Makefile','docker-compose.yml','Dockerfile'];
+  const codeExts = ['.py','.js','.ts','.jsx','.tsx','.go','.rs','.java','.rb','.cs','.cpp','.c'];
+  const files = tree.filter(f => f.type === 'blob');
+  const keyFiles = [];
+  for (const name of priority) {
+    const f = files.find(f => f.path === name || f.path.endsWith('/' + name));
+    if (f && f.size < 50000) {
+      try {
+        const d = await ghFetch(`/repos/${owner}/${repo}/contents/${f.path}`, token);
+        if (d.content) keyFiles.push({ path: f.path, content: atob(d.content.replace(/\n/g, '')) });
+      } catch {}
+    }
+  }
+  const srcFiles = files
+    .filter(f => codeExts.some(e => f.path.endsWith(e)) && f.size < 8000 && !/(node_modules|dist|\.min\.)/.test(f.path))
+    .slice(0, 5);
+  for (const f of srcFiles) {
+    try {
+      const d = await ghFetch(`/repos/${owner}/${repo}/contents/${f.path}`, token);
+      if (d.content) keyFiles.push({ path: f.path, content: atob(d.content.replace(/\n/g, '')).slice(0, 3000) });
+    } catch {}
+  }
+  return keyFiles;
+}
+
+// ── Logging ────────────────────────────────────────────────────────────────
+const LOG_COLORS = { default:'#c9d1d9', success:'#3fb950', error:'#f85149', info:'#58a6ff', muted:'#6e7681', accent:'#d2a8ff', warn:'#e3b341' };
+
+function addLog(text, type = 'default', animate = false) {
+  const body = document.getElementById('log-body');
+  document.getElementById('card-log').style.display = '';
+  const c = LOG_COLORS[type] || LOG_COLORS.default;
+  const div = document.createElement('div');
+  div.className = 'log-line';
+  div.style.color = c;
+  if (animate) {
+    const dot = document.createElement('span');
+    dot.className = 'log-pulse';
+    dot.style.background = c;
+    dot.style.boxShadow = `0 0 6px ${c}`;
+    dot.id = 'anim-dot';
+    div.appendChild(dot);
+  }
+  const span = document.createElement('span');
+  span.textContent = text;
+  div.appendChild(span);
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+  // remove previous animated dot
+  const prev = document.getElementById('anim-dot');
+  if (prev && prev !== div.querySelector('.log-pulse')) prev.remove();
+}
+
+function clearLogs() {
+  document.getElementById('log-body').innerHTML = '';
+  document.getElementById('card-log').style.display = 'none';
+}
+
+// ── Badge / step bar ───────────────────────────────────────────────────────
+const BADGE_MAP = {
+  credentials:   { label:'READY',           color:'#58a6ff' },
+  loading_repos: { label:'LOADING REPOS',   color:'#d2a8ff' },
+  select_repo:   { label:'SELECT REPO',     color:'#e3b341' },
+  fetching:      { label:'FETCHING',        color:'#d2a8ff' },
+  existing:      { label:'REVIEW EXISTING', color:'#e3b341' },
+  analyzing:     { label:'ANALYZING',       color:'#d2a8ff' },
+  preview:       { label:'PREVIEW',         color:'#3fb950' },
+  pushing:       { label:'PUSHING',         color:'#e3b341' },
+  done:          { label:'PUSHED ✓',        color:'#3fb950' },
+  error:         { label:'ERROR',           color:'#f85149' },
+};
+
+const STEP_BAR_MAP = {
+  credentials:   1, loading_repos: 1,
+  select_repo:   2, fetching:      2,
+  existing:      3,
+  analyzing:     4,
+  preview:       5, pushing: 5, done: 5,
+  error:         0,
+};
+
+function updateBadge(step) {
+  const { label, color } = BADGE_MAP[step] || BADGE_MAP.credentials;
+  const el = document.getElementById('badge');
+  el.textContent = label;
+  el.style.color = color;
+  el.style.background = color + '18';
+  el.style.borderColor = color + '44';
+
+  for (let i = 1; i <= 5; i++) {
+    const s = document.getElementById(`step-${i}`);
+    s.classList.toggle('active', STEP_BAR_MAP[step] === i);
+  }
+}
+
+// ── UI helpers ─────────────────────────────────────────────────────────────
+function show(id) { const el = document.getElementById(id); if (el) el.style.display = ''; }
+function hide(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+function setHTML(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
+
+function showError(msg) {
+  show('error-box');
+  document.getElementById('error-text').textContent = '✗ ' + msg;
+  document.getElementById('btn-back-repos').style.display = state.repos.length > 0 ? '' : 'none';
+}
+function hideError() { hide('error-box'); }
+
+function setWorking(val) {
+  state.isWorking = val;
+  document.getElementById('btn-reset').style.display = (!val && state.step !== 'credentials') ? '' : 'none';
+}
+
+function downloadFile(content, filename) {
+  const blob = new Blob([content], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadBackup() {
+  if (state.existingReadme?.content) downloadFile(state.existingReadme.content, 'README.backup.md');
+}
+function downloadGenerated() {
+  downloadFile(document.getElementById('generated-textarea').value, 'README.md');
+}
+
+// ── Token input ────────────────────────────────────────────────────────────
+function onPatInput() {
+  const val = document.getElementById('pat-input').value.trim();
+  state.pat = val;
+  const hint = document.getElementById('token-type-hint');
+  hint.textContent = val.startsWith('github_pat_') ? '🟡 fine-grained token' : val.startsWith('ghp_') ? '🟢 classic token' : '';
+  document.getElementById('btn-load-repos').disabled = !val;
+}
+
+// ── Step: load repos ───────────────────────────────────────────────────────
+async function loadRepos() {
+  hideError(); clearLogs();
+  goToStep('loading_repos');
+  setWorking(true);
+  try {
+    addLog('→ Authenticating with GitHub...', 'info', true);
+    const user = await ghFetch('/user', state.pat);
+    addLog(`✓ Signed in as @${user.login}`, 'success');
+    addLog('→ Loading repositories...', 'info', true);
+    const repos = await fetchAllRepos(state.pat);
+    state.repos = repos;
+    addLog(`✓ ${repos.length} repos loaded (${repos.filter(r=>r.private).length} private)`, 'success');
+    // populate dropdown
+    renderRepoList(repos);
+    document.getElementById('repo-count-label').textContent = `${repos.length} repos · ${repos.filter(r=>r.private).length} private`;
+    show('card-repo');
+    goToStep('select_repo');
+  } catch (e) {
+    showError(e.message);
+    addLog('✗ ' + e.message, 'error');
+    goToStep('error');
+  } finally {
+    setWorking(false);
+  }
+}
+
+// ── Repo dropdown ──────────────────────────────────────────────────────────
+function renderRepoList(repos, filter = '') {
+  const list = document.getElementById('repo-list');
+  list.innerHTML = '';
+  const filtered = repos
+    .filter(r => r.full_name.toLowerCase().includes(filter.toLowerCase()) || (r.description||'').toLowerCase().includes(filter.toLowerCase()))
+    .slice(0, 60);
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="padding:12px 14px;color:#6e7681;font-size:12px">No repos match</div>';
+  } else {
+    filtered.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'dropdown-item';
+      item.innerHTML = `
+        <div style="min-width:0;flex:1">
+          <div class="dropdown-item-name">${r.private ? '🔒' : '📂'} ${escHtml(r.full_name)}</div>
+          ${r.description ? `<div class="dropdown-item-desc">${escHtml(r.description)}</div>` : ''}
+        </div>
+        <div class="dropdown-item-tags">
+          ${r.language ? `<span class="tag">${escHtml(r.language)}</span>` : ''}
+          ${r.private ? `<span class="tag-private">private</span>` : ''}
+        </div>`;
+      item.addEventListener('click', () => selectRepo(r));
+      list.appendChild(item);
+    });
+  }
+  document.getElementById('repo-footer').textContent = `${filtered.length} of ${repos.length} repos`;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toggleDropdown() {
+  const menu = document.getElementById('dropdown-menu');
+  const trigger = document.getElementById('dropdown-trigger');
+  const arrow = document.getElementById('dropdown-arrow');
+  const isOpen = menu.style.display !== 'none';
+  if (isOpen) {
+    menu.style.display = 'none';
+    trigger.classList.remove('open');
+    arrow.textContent = '▼';
+  } else {
+    menu.style.display = '';
+    trigger.classList.add('open');
+    arrow.textContent = '▲';
+    document.getElementById('repo-search').value = '';
+    renderRepoList(state.repos);
+    setTimeout(() => document.getElementById('repo-search').focus(), 50);
+  }
+}
+
+function filterRepos() {
+  renderRepoList(state.repos, document.getElementById('repo-search').value);
+}
+
+function selectRepo(repo) {
+  state.selectedRepo = repo;
+  // update trigger label
+  const label = document.getElementById('dropdown-label');
+  label.style.color = '#c9d1d9';
+  label.textContent = (repo.private ? '🔒 ' : '📂 ') + repo.full_name + (repo.language ? ` [${repo.language}]` : '');
+  // close dropdown
+  document.getElementById('dropdown-menu').style.display = 'none';
+  document.getElementById('dropdown-trigger').classList.remove('open');
+  document.getElementById('dropdown-arrow').textContent = '▼';
+  // show action
+  show('repo-action-row');
+}
+
+// close dropdown on outside tap
+document.addEventListener('click', e => {
+  const dd = document.getElementById('repo-dropdown');
+  if (dd && !dd.contains(e.target)) {
+    document.getElementById('dropdown-menu').style.display = 'none';
+    document.getElementById('dropdown-trigger').classList.remove('open');
+    document.getElementById('dropdown-arrow').textContent = '▼';
+  }
+});
+
+// ── Step: fetch repo ───────────────────────────────────────────────────────
+async function fetchRepo() {
+  if (!state.selectedRepo) return;
+  hideError();
+  goToStep('fetching');
+  setWorking(true);
+  const r = state.selectedRepo;
+  const owner = r.owner.login;
+  const repo = r.name;
+  const branch = r.default_branch;
+  try {
+    addLog(`→ Loading ${owner}/${repo}...`, 'info', true);
+    const treeData = await ghFetch(`/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`, state.pat);
+    state.repoTree = treeData.tree;
+    state.repoMeta = { owner, repo, branch, description: r.description, language: r.language, stars: r.stargazers_count };
+    addLog(`✓ ${state.repoTree.filter(f=>f.type==='blob').length} files on branch '${branch}'`, 'success');
+    addLog('→ Checking for existing README...', 'info', true);
+    const existing = await fetchExistingReadme(owner, repo, state.pat);
+    state.existingReadme = existing;
+    if (existing.exists) {
+      addLog(`✓ Found README.md (${existing.content.length.toLocaleString()} chars)`, 'warn');
+      addLog('  ↳ Download backup before generating', 'muted');
+    } else {
+      addLog('ℹ No README.md — will create from scratch', 'info');
+    }
+    renderExistingCard(existing);
+    goToStep('existing');
+  } catch (e) {
+    showError(e.message);
+    addLog('✗ ' + e.message, 'error');
+    goToStep('error');
+  } finally {
+    setWorking(false);
+  }
+}
+
+function renderExistingCard(existing) {
+  show('card-existing');
+  if (existing.exists) {
+    setText('existing-icon', '📄');
+    setText('existing-title', 'Existing README.md');
+    setText('existing-sub', existing.content.length.toLocaleString() + ' chars');
+    show('btn-backup');
+    document.getElementById('existing-body').innerHTML =
+      `<textarea readonly style="height:160px">${escHtml(existing.content)}</textarea>`;
+    setText('btn-generate', '✦ Generate improved README');
+    setText('existing-hint', 'Tip: download backup first');
+  } else {
+    setText('existing-icon', '🆕');
+    setText('existing-title', 'No README found');
+    setText('existing-sub', 'Will be created fresh');
+    hide('btn-backup');
+    document.getElementById('existing-body').innerHTML =
+      `<div style="padding:14px;color:#6e7681;font-size:13px">✦ Claude will write a README from scratch.</div>`;
+    setText('btn-generate', '✦ Generate README');
+    setText('existing-hint', '');
+  }
+  show('existing-action');
+}
+
+// ── Step: generate ─────────────────────────────────────────────────────────
+async function generate() {
+  hideError();
+  goToStep('analyzing');
+  setWorking(true);
+  hide('existing-action');
+  const { owner, repo } = state.repoMeta;
+  try {
+    addLog('→ Fetching key files...', 'info', true);
+    const keyFiles = await doFetchKeyFiles(owner, repo, state.pat, state.repoTree);
+    addLog(`✓ Loaded ${keyFiles.length} files`, 'success');
+
+    const allPaths = state.repoTree.filter(f=>f.type==='blob').map(f=>f.path).slice(0,150).join('\n');
+    const fileContents = keyFiles.map(f=>`### ${f.path}\n\`\`\`\n${f.content}\n\`\`\``).join('\n\n');
+    const existingCtx = state.existingReadme?.exists
+      ? `\n\nEXISTING README (improve upon this):\n${state.existingReadme.content.slice(0,3000)}`
+      : '';
+
+    addLog('→ Sending to Claude...', 'accent', true);
+
+    const prompt = `You are a senior developer writing a professional README.md for a GitHub repository.
+
+Repository: ${owner}/${repo}
+Description: ${state.repoMeta.description || 'N/A'}
+Primary language: ${state.repoMeta.language || 'N/A'}
+Stars: ${state.repoMeta.stars}${existingCtx}
+
+File tree (up to 150 files):
+\`\`\`
+${allPaths}
+\`\`\`
+
+Key file contents:
+${fileContents}
+
+Write a comprehensive, professional README.md in Markdown. Include:
+- Project title and clear one-line description
+- Badges (shields.io placeholders)
+- Overview of what the project does
+- Features list
+- Tech stack & requirements
+- Installation & setup (inferred from config files)
+- Usage / quick start with code examples
+- Configuration section if applicable
+- Project structure (key folders/files explained)
+- Contributing guidelines
+- License section
+
+Be specific to THIS codebase. Use actual file/folder names.
+${state.existingReadme?.exists ? 'Improve the existing README — keep what is good, fill gaps.' : ''}
+Respond with ONLY the raw Markdown — no preamble, no explanation.`;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'Claude API error');
+    const generated = data.content?.find(b => b.type === 'text')?.text || '';
+    if (!generated) throw new Error('No content returned from Claude');
+
+    state.readme = generated;
+    addLog(`✓ README generated (${generated.length.toLocaleString()} chars)`, 'success');
+    renderGeneratedCard(generated);
+    goToStep('preview');
+  } catch (e) {
+    showError(e.message);
+    addLog('✗ ' + e.message, 'error');
+    show('existing-action');
+    goToStep('error');
+  } finally {
+    setWorking(false);
+  }
+}
+
+function renderGeneratedCard(content) {
+  show('card-generated');
+  const ta = document.getElementById('generated-textarea');
+  ta.value = content;
+  ta.disabled = false;
+  setText('generated-sub', content.length.toLocaleString() + ' chars — edit before pushing');
+  show('generated-action');
+  hide('done-row');
+  document.getElementById('btn-push').disabled = false;
+  document.getElementById('btn-push').innerHTML = '↑ Push to GitHub';
+}
+
+// ── Step: push ─────────────────────────────────────────────────────────────
+async function push() {
+  hideError();
+  goToStep('pushing');
+  setWorking(true);
+  const { owner, repo, branch } = state.repoMeta;
+  const content = document.getElementById('generated-textarea').value;
+  const btn = document.getElementById('btn-push');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Pushing...';
+  document.getElementById('generated-textarea').disabled = true;
+
+  addLog(`→ Pushing README.md to ${owner}/${repo} (${branch})...`, 'info', true);
+  try {
+    const body = {
+      message: 'docs: generate README via Claude AI',
+      content: btoa(unescape(encodeURIComponent(content))),
+      branch,
+    };
+    if (state.existingReadme?.sha) body.sha = state.existingReadme.sha;
+    await ghFetch(`/repos/${owner}/${repo}/contents/README.md`, state.pat, { method: 'PUT', body: JSON.stringify(body) });
+    addLog('✓ README.md committed successfully', 'success');
+    addLog(`✓ github.com/${owner}/${repo}`, 'success');
+    hide('generated-action');
+    const link = document.getElementById('github-link');
+    link.href = `https://github.com/${owner}/${repo}`;
+    show('done-row');
+    goToStep('done');
+  } catch (e) {
+    showError(e.message);
+    addLog('✗ ' + e.message, 'error');
+    btn.disabled = false;
+    btn.innerHTML = '↑ Push to GitHub';
+    document.getElementById('generated-textarea').disabled = false;
+    goToStep('error');
+  } finally {
+    setWorking(false);
+  }
+}
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+function goToStep(step) {
+  state.step = step;
+  updateBadge(step);
+  setWorking(['loading_repos','fetching','analyzing','pushing'].includes(step));
+  document.getElementById('btn-reset').style.display =
+    (!state.isWorking && step !== 'credentials') ? '' : 'none';
+}
+
+function reset() {
+  state = { step:'credentials', pat:'', repos:[], selectedRepo:null, repoMeta:null, repoTree:null, existingReadme:null, readme:'', isWorking:false };
+  clearLogs();
+  hideError();
+  hide('card-repo');
+  hide('card-existing');
+  hide('card-generated');
+  hide('done-row');
+  show('generated-action');
+  document.getElementById('existing-body').innerHTML = '';
+  document.getElementById('pat-input').value = '';
+  document.getElementById('token-type-hint').textContent = '';
+  document.getElementById('btn-load-repos').disabled = true;
+  document.getElementById('dropdown-label').textContent = 'Select a repository…';
+  document.getElementById('dropdown-label').style.color = '#6e7681';
+  document.getElementById('repo-action-row').style.display = 'none';
+  document.getElementById('generated-textarea').value = '';
+  goToStep('credentials');
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+updateBadge('credentials');
+</script>
+</body>
+</html>
